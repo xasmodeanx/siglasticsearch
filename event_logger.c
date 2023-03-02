@@ -48,6 +48,7 @@ static void update_state(int group, int modem)
 static void add_modem_info(cJSON *root, int group, int modem)
 {
 	int serial = 0;
+	char uid_str[64];
 	char *status_str = NULL;
 	switch(g_state[group][modem]) {
 		case 0: status_str = "unconfigured"; break;
@@ -57,6 +58,8 @@ static void add_modem_info(cJSON *root, int group, int modem)
 		//default: status_str = "unknown";
 	}
 
+	sprintf(uid_str, "%d/%d", group, modem);
+	cJSON_AddStringToObject(root, "UID", uid_str);
 	cJSON_AddNumberToObject(root, "Group", group);
 	cJSON_AddNumberToObject(root, "Modem", modem);
 
