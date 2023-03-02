@@ -34,9 +34,10 @@ static void update_state(int group, int modem)
 	g_state[group][modem]++;
 	if(g_state[group][modem] > 3) { g_state[group][modem] = 0; }
 
-	// If modem goes to Unconfigured, clear the serial
+	// If modem becomes Unconfigured, clear the serial
 	if(g_state[group][modem] == 0) { g_serial[group][modem] = 0; }
 
+	// If modem becomes offline, fabricate a serial if it doesn't have one
 	if(g_state[group][modem] == 1) {
 		if(g_serial[group][modem] == 0) {
 			//Fabricate a random serial
