@@ -40,14 +40,14 @@ static void update_state(int group, int modem)
 	if(g_state[group][modem] == 1) {
 		if(g_serial[group][modem] == 0) {
 			//Fabricate a random serial
-			while(g_serial[group][modem] == 0) { g_serial[group][modem] = rand(); }
+			while(g_serial[group][modem] <= 0) { g_serial[group][modem] = rand(); }
 		}
 	}
 }
 
 static void add_modem_info(cJSON *root, int group, int modem)
 {
-	int serial = 0;
+	int serial;
 	char uid_str[64];
 	char *status_str = NULL;
 	switch(g_state[group][modem]) {
@@ -58,7 +58,7 @@ static void add_modem_info(cJSON *root, int group, int modem)
 		//default: status_str = "unknown";
 	}
 
-	sprintf(uid_str, "%d/%d", group, modem);
+	snprintf(uid_str, sizeof(uid_str), "%d/%d", group, modem);
 	cJSON_AddStringToObject(root, "UID", uid_str);
 	cJSON_AddNumberToObject(root, "Group", group);
 	cJSON_AddNumberToObject(root, "Modem", modem);
