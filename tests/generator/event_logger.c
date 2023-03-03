@@ -35,7 +35,7 @@ static void update_state(int group, int modem)
 	if(g_state[group][modem] > 3) { g_state[group][modem] = 0; }
 
 	// If modem becomes Unconfigured, clear the serial
-	if(g_state[group][modem] == 0) { g_serial[group][modem] = 0; }
+	//if(g_state[group][modem] == 0) { g_serial[group][modem] = 0; }
 
 	// If modem becomes offline, fabricate a serial if it doesn't have one
 	if(g_state[group][modem] == 1) {
@@ -57,19 +57,22 @@ static void add_modem_info(cJSON *root, int group, int modem)
 		//default: status_str = "unknown";
 	}
 
-	char uid_str[64];
-	snprintf(uid_str, sizeof(uid_str), "%d/%d", group, modem);
-	cJSON_AddStringToObject(root, "UID", uid_str);
-	cJSON_AddNumberToObject(root, "Group", group);
-	cJSON_AddNumberToObject(root, "Modem", modem);
+	char temp[64];
+	snprintf(temp, sizeof(temp), "%d/%d", group, modem);
+	cJSON_AddStringToObject(root, "UID", temp);
+	snprintf(temp, sizeof(temp), "%d", group);
+	cJSON_AddStringToObject(root, "groupNumber", temp);
+	snprintf(temp, sizeof(temp), "%d", modem);
+	cJSON_AddStringToObject(root, "modemNumber", temp);
 
 	if(status_str) {
-		cJSON_AddStringToObject(root, "Status", status_str);
+		cJSON_AddStringToObject(root, "operatingMode", status_str);
 	}
 
 	int serial = g_serial[group][modem];
 	if(serial > 0) {
-		cJSON_AddNumberToObject(root, "Serial", serial);
+		snprintf(temp, sizeof(temp), "%d", serial);
+		cJSON_AddStringToObject(root, "serialNumber", temp);
 	}
 }
 
@@ -77,17 +80,23 @@ static void add_network_info(cJSON *root)
 {
 	char *network = getenv("NETWORK");
 	if(network) {
-		cJSON_AddStringToObject(root, "Network", network);
+		cJSON_AddStringToObject(root, "networkName", network);
 	}
 }
 
+/*
+date --date='Jan 1 00:00:00 MST 2023' "+%s" = 672556400
+date --date='Feb 1 00:00:00 MST 2023' "+%s" = 1675234800
+date --date='Mar 1 00:00:00 MST 2023' "+%s" = 1677654000
+*/
+struct timespec g_ts = {0,0};
 static void add_time(cJSON *root)
 {
-	struct timespec ts;
 	char timestamp[64];
-	clock_gettime(CLOCK_REALTIME, &ts);
-	sprintf(timestamp, "%ld.%09ld", ts.tv_sec, ts.tv_nsec);
-	cJSON_AddStringToObject(root, "Time", timestamp);
+	//clock_gettime(CLOCK_REALTIME, &ts);
+	g_ts.tv_sec += (rand() % 300);
+	sprintf(timestamp, "%ld.%09ld", g_ts.tv_sec, g_ts.tv_nsec);
+	cJSON_AddStringToObject(root, "modeUpdateTime", timestamp);
 }
 
 static void log_event(int group, int modem)
@@ -122,20 +131,27 @@ static void initialize(void)
 int main(int argc, char *argv[])
 {
 	int group, modem;
-	useconds_t delay;
+
+	if(argc != 3) {
+		fprintf(stderr, "%s: <startTime> <endTime>\n", argv[0]);
+		exit(1);
+	}
 
 	initialize();
 
-	long numevents = 1000;
-	if(argc == 2) { numevents = atol(argv[1]); }
+	//useconds_t delay;
+	//long numevents = 1000;
+	//if(argc == 2) { numevents = atol(argv[1]); }
+	//while(numevents-- > 0) {
 
-	while(numevents-- > 0) {
+	g_ts.tv_sec = atol(argv[1]);
+	while(g_ts.tv_sec < atol(argv[2])) {
 		//Fabricate a random group and modem
 		group = RANDGRP; modem = RANDMID;
 		update_state(group, modem);
 		log_event(group, modem);
-		delay = (rand() % 1000);
-		usleep(delay);
+		//delay = (rand() % 1000);
+		//usleep(delay);
 	}
 
 	return 0;
