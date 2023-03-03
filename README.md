@@ -3,8 +3,8 @@
 
 ### Pre-requisites
 1. Docker and docker-cli installed
-2. Tool `bc and build-essential (gcc, make, etc)` installed
-`sudo apt install gc build-essential`
+2. Tool `bc and build-essential (gcc, make, etc)` installed, e.g.
+`sudo apt install bc build-essential`
 
 ### Creating the Siglasticsearch Image
 1. Run the `build_siglasticsearch_image_and_container.sh` script and follow the on-screen directions.  This script will generate a .tar.gz file that can be taken to offline systems to load.
