@@ -19,31 +19,31 @@ fi
 #Get the total number of CPUs on this machine so we can dynamically allocate resources
 #Depending on if this is a beef server or not
 NUMHOSTCPUS="`nproc`"
-if [ "$NUMHOSTCPUS" -lt "8" ]; then
+if [ "${NUMHOSTCPUS}" -lt "8" ]; then
 	#If we only had 7 or fewer CPUs available, set our elastic number of max CPUs to the min: 2, i.e. [0,1]
 	CPUS="1"
-	echo "Detected minimum CPU 0 through $CPUS CPU(s) available for the elastic container."
+	echo "Detected minimum CPU 0 through ${CPUS} CPU(s) available for the elastic container."
 else
 	#If we had 8 or more CPUs on this machine, use ~1 quarter of them for the elastic container, i.e. [0-X] where X is 1/4 nproc
-	CPUS="`echo \"$NUMHOSTCPUS / 4\" | bc`"
-	echo "Detected CPU 0 through $CPUS CPU(s) available for the elastic container."
+	CPUS="`echo \"${NUMHOSTCPUS} / 4\" | bc`"
+	echo "Detected CPU 0 through ${CPUS} CPU(s) available for the elastic container."
 fi
 
 #Similarly we need to also figure out how much memory we can give to the container as well. Minimum amount for elastic is 4G.
 MAXHOSTMEM="`awk '/MemTotal/ {printf \"%.0f \n\", $2/1024/1024}' /proc/meminfo`" 
-if [ "$MAXHOSTMEM" -le "16" ]; then
+if [ "${MAXHOSTMEM}" -le "16" ]; then
 	#Elastic requires a minimum of 4G, full stop.  Can't go lower.
 	MEM="4"
 	echo "Detected minimum memory allocation of ${MEM}G for container"
 else
 	#If we have more than 16G, we can safely take 1/3 of the memory and give to the container
-	MEM="`echo \"$MAXHOSTMEM / 3\" | bc`"
+	MEM="`echo \"${MAXHOSTMEM} / 3\" | bc`"
 	echo "Detected memory allocation of ${MEM}G for container"
 fi
 
 #destroy the old containers and images
-CONNAME="`docker container ls --all | grep siglasticsearch | awk '{print $1}'`"; echo $CONNNAME; docker container kill $CONNAME 2>/dev/null; docker container rm -f $CONNNAME 2>/dev/null
-IMGNAME="`docker image ls --all | grep siglasticsearch | awk '{print $3}'`"; echo $IMGNAME; docker image rm $IMGNAME 2>/dev/null
+CONNAME="`docker container ls --all | grep siglasticsearch | awk '{print $1}'`"; echo ${CONNAME}; docker container kill ${CONNAME} 2>/dev/null; docker container rm -f ${CONNAME} 2>/dev/null
+IMGNAME="`docker image ls --all | grep siglasticsearch | awk '{print $3}'`"; echo ${IMGNAME}; docker image rm ${IMGNAME} 2>/dev/null
 
 #We need to have the vm.max_map_count setting in sysctl set to 262144, usually the default is too low
 #Warn the user if the setting is not optimal.
@@ -69,7 +69,7 @@ if [ "`sysctl --all 2>/dev/null| grep vm.max_map_count| awk '{print $3}'`" -lt "
 fi
 
 #if we got any command line argument to this script, let's blow away the pre-made image and rebuilt it from scratch
-if [ "$REBUILD" ]; then
+if [ "${REBUILD}" ]; then
 	#create the new image and container
 	docker build -t siglasticsearch_image .
 	#if the build succeeded, then let's save off a new image
@@ -84,8 +84,8 @@ if [ "$REBUILD" ]; then
 
 	#remove all of the intermediate build images to save space and then import the offline container image
 	#destroy the old containers and images
-	CONNAME="`docker container ls --all | grep siglasticsearch | awk '{print $1}'`"; echo $CONNNAME; docker container kill $CONNAME 2>/dev/null; docker container rm -f $CONNAME 2>/dev/null
-	IMGNAME="`docker image ls --all | grep siglasticsearch | awk '{print $3}'`"; echo $IMGNAME; docker image rm $IMGNAME 2>/dev/null
+	CONNAME="`docker container ls --all | grep siglasticsearch | awk '{print $1}'`"; echo ${CONNAME}; docker container kill ${CONNAME} 2>/dev/null; docker container rm -f ${CONNAME} 2>/dev/null
+	IMGNAME="`docker image ls --all | grep siglasticsearch | awk '{print $3}'`"; echo ${IMGNAME}; docker image rm ${IMGNAME} 2>/dev/null
 	#unpack and import the image
         tar -zxvf siglasticsearch_image.tar.gz
         docker load -i siglasticsearch_image.docker
