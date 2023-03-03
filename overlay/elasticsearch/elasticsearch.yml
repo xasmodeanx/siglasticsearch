@@ -1,0 +1,16 @@
+network.host: 0.0.0.0
+http.port: 9200
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+indices.breaker.total.limit: 80%
+ingest.geoip.downloader.enabled: false
+xpack.security.enabled: true
+discovery.type: single-node
+path.data: /usr/share/elasticsearch/data
+path.logs: /var/log/elasticsearch
+#Enable Anonymous access for index searches
+#xpack.security.authc:
+  #anonymous:
+    #roles: anonymous
+    #authz_exception: false
+

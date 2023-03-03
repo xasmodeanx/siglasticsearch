@@ -1,0 +1,27 @@
+server.host: "0.0.0.0"
+server.port: 5601
+#server.basePath: "/kibana"
+#server.rewriteBasePath: "true"
+#server.publicBaseUrl: "https://something.somedomain.tld/kibana"
+server.shutdownTimeout: "5s"
+elasticsearch.hosts: [ "http://localhost:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
+elasticsearch.username: "kibana_system"
+#Alter cookie settings to be more secure and allow embedded content authentication
+#xpack.security.sameSiteCookies: "None"
+#xpack.security.secureCookies: "true"
+#NOTE: Do not uncomment the above cookie lines unless you implement TLS (either in Kibana itself or through a proxy)! Browsers will not negotiate these sameSite/secure cookies without a TLS session!
+#See https://www.elastic.co/guide/en/elasticsearch/reference/8.6/security-basic-setup-https.html#encrypt-kibana-browser for more info.
+#
+#Auto-login via: https://github.com/elastic/kibana/pull/79985
+xpack.security.authc.providers:
+  anonymous.anonymous1:
+    order: 0
+    description: "Guest Login"
+    icon: "globe"
+    credentials:
+      username: "anonymous"
+      password: "anonymous"
+  basic.basic1:
+    order: 1
+    description: "Admin Login"

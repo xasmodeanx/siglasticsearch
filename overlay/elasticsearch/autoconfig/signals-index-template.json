@@ -1,0 +1,46 @@
+{
+  "order": 0,
+  "index_patterns": [
+    "signals-*"
+  ],
+  "settings": {
+    "index": {
+      "lifecycle": {
+        "name": "signals-lifecycle-policy",
+        "rollover_alias": "signals"
+      }
+    }
+  },
+  "mappings": {
+    "dynamic_templates": [],
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+        },
+        "Group": {
+          "type": "keyword"
+        },
+        "Modem": {
+          "type": "keyword"
+        },
+        "Network": {
+          "type": "keyword"
+        },
+        "Serial": {
+          "type": "keyword"
+        },
+        "Status": {
+          "type": "keyword"
+        },
+        "Time": {
+          "type": "date",
+          "format": "epoch_second"
+        },
+        "UID": {
+          "type": "keyword"
+        }
+      }
+  }
+}
+
+

@@ -1,0 +1,7 @@
+{
+  "aliases": {
+    "signals": {
+      "is_write_index": true
+    }
+  }
+}

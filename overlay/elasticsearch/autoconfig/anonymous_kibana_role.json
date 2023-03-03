@@ -1,0 +1,43 @@
+{
+    "elasticsearch": {
+        "cluster": [],
+        "indices": [
+            {
+                "names": [
+                    "signals"
+                ],
+                "privileges": [
+                    "read"
+                ],
+                "field_security": {
+                    "grant": [
+                        "*"
+                    ]
+                }
+            }
+        ],
+        "run_as": []
+    },
+    "kibana": [
+        {
+            "spaces": [
+                "default"
+            ],
+            "base": [],
+            "feature": {
+                "discover": [
+                    "read"
+                ],
+                "dashboard": [
+                    "read"
+                ],
+                "visualize": [
+                    "read"
+                ],
+                "ml": [
+                    "read"
+                ]
+            }
+        }
+    ]
+}

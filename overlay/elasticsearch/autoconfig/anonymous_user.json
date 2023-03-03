@@ -1,0 +1,9 @@
+{
+  "password" : "anonymous",
+  "roles" : [ "anonymous", "Signal_Viewer" ],
+  "full_name" : "Anonymous Read-Only Signal Viewing User",
+  "email" : "anonymous@something.tld",
+  "metadata" : {
+    "intelligence" : 7
+  }
+}
