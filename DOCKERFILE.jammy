@@ -4,11 +4,12 @@
 #Use supervisord to manage.  Provide templates for indexes, policies, passwordless login and anonymous access.
 #
 # BUILDING:	docker build -t siglasticsearch-image .
-# INSTATIATING:	docker run --name siglasticsearch --net host -h siglasticsearch -d --restart-always --cap-add SYS_TIME --memory 4G -p 9200:9200 -p 5601:5601 --ulimit nofile=65535:65535 -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 -e "discovery.type=single-node" siglasticsearch-image
+# INSTANTIATING:	docker run --name siglasticsearch --net host -h siglasticsearch -d --restart-always --cap-add SYS_TIME --memory 4G -p 9200:9200 -p 5601:5601 --ulimit nofile=65535:65535 -e "bootstrap.memory_lock=true" --ulimit memlock=-1:-1 -e "discovery.type=single-node" siglasticsearch-image
 # DEBUGGING: 	docker container exec -it siglasticsearch /bin/bash
-# ACCESSING:    http://localhost:5601
+# ACCESSING:    http://localhost:5601/kibana
 
 FROM ubuntu:22.04 AS build
+
 MAINTAINER Jason Barnett <xasmodeanx@gmail.com>
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -23,7 +24,7 @@ RUN apt install -y bash supervisor curl net-tools nano apt-transport-https wget 
 COPY overlay /
 
 #################################################
-#Install Elasticsearch and Kibana		#
+#Install Elasticsearch and Kibana	            	#
 #################################################
 #Elastic 7.x repo setup
 RUN curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic.gpg
@@ -41,28 +42,28 @@ RUN rm -fv /etc/kibana/kibana.yml; mkdir -p /usr/share/kibana/config/; cp /kiban
 
 
 #################################################
-#Clean up					#
+#Clean up			                              		#
 #################################################
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt clean
 
 
 #################################################
-#Shrink image down				#
+#Shrink image down			                      	#
 #################################################
 FROM ubuntu:22.04 
 COPY --from=build ./ /
 
 #################################################
-#Healthcheck                              #
+#Healthcheck                                    #
 #################################################
 #If elastic and kibana are up and running, mark container as healthy
 HEALTHCHECK CMD /healthcheck.sh
 
 #################################################
-#Open ports                              #
+#Open ports                                    #
 #################################################
-#Open ports: 	9200 - elastic API,
+#   9200 - elastic API,
 #		9300 - elastic to elastic comms (must be secured, it is not by default),
 #		80 - Kibana (http), 
 #		5601 - Kibana (http), 
@@ -72,6 +73,6 @@ EXPOSE 9200 80 443 5601
 
 
 
-#Run supervisor at instantiation time, processes will be controlled by supervisor in /etc/supervisor.conf
+#Run supervisor at instantiation time, processes will be controlled by supervisor in /etc/supervisor/supervisord.conf
 #/usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 CMD ["/usr/bin/python3", "/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
