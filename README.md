@@ -1,6 +1,9 @@
 # siglasticsearch
 ## A Pre-Configured Container running: Elasticsearch and Kibana for use in Signal Analysis Applications
 
+![image](https://user-images.githubusercontent.com/50801917/222636426-af3a4b65-d0b1-4ad8-8a8d-6f365277a2e5.png)
+
+
 ### Pre-requisites
 1. Docker and docker-cli installed
 2. Tool `bc and build-essential (gcc, make, etc)` installed, e.g.
@@ -33,3 +36,6 @@ If you need the Admin password (the 'elastic' username/password), you can find i
 1. This repo and script will generate a container that attached to the host network.  This is bad security practice.  You should create your own Docker network and attach it and give it an IP there so that it doesn't conflict with other containers and doesn't expose itself fully to the host network.
 2. You should deploy this container behind a proxy OR enable TLS for Kibana.  Documentation for enabling TLS for Kibana is at  https://www.elastic.co/guide/en/elasticsearch/reference/8.6/security-basic-setup-https.html#encrypt-kibana-browser - if you do this, you will need to modify your /etc/kibana/kibana.yml file and uncomment the lines dealing with Cookies.
 3. If you would like to embed the kibana page in an iframe, you can pass the anonymous authentication credentials along with the request to skip the login screen.  See example here: `<iframe src="https://localhost:5601/kibana/app/monitoring?auth_provider_hint=anonymous1#/elasticsearch/nodes?embed=true&_g=(....)" height="600" width="800"></iframe>`
+
+### Screenshots
+![image](https://user-images.githubusercontent.com/50801917/222636555-2d9f26cf-bfff-4a4a-9ccf-d90e5f5e3b2f.png)
