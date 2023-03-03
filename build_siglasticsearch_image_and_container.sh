@@ -68,6 +68,15 @@ if [ "`sysctl --all 2>/dev/null| grep vm.max_map_count| awk '{print $3}'`" -lt "
 	echo
 fi
 
+# Prepare the saved docker image and adjust for optional compression
+IMAGE_FILENAME="siglasticsearch.di.tar"
+
+case ${COMPRESSION} in
+  "xz")  COMPRESS_EXT=".xz";  COMPRESS_CMD="xz -T0";;
+  "bz2") COMPRESS_EXT=".bz2"; COMPRESS_CMD="bzip2";;
+  "gz")  COMPRESS_EXT=".gz";  COMPRESS_CMD="gzip";;
+esac
+
 #if we got any command line argument to this script, let's blow away the pre-made image and rebuilt it from scratch
 if [ "${REBUILD}" ]; then
 	#create the new image and container
@@ -79,16 +88,17 @@ if [ "${REBUILD}" ]; then
 	fi
 	
 	#save off our image for offline use
-	docker save -o siglasticsearch_image.docker siglasticsearch_image
-	tar -zcvf siglasticsearch_image.tar.gz siglasticsearch_image.docker
+	docker save -o ${IMAGE_FILENAME} siglasticsearch_image:latest
+	if [ -n "${COMPRESS_CMD}" ]; then
+	  ${COMPRESS_CMD} ${IMAGE_FILENAME}
+	fi
 
 	#remove all of the intermediate build images to save space and then import the offline container image
 	#destroy the old containers and images
 	CONNAME="`docker container ls --all | grep siglasticsearch | awk '{print $1}'`"; echo ${CONNAME}; docker container kill ${CONNAME} 2>/dev/null; docker container rm -f ${CONNAME} 2>/dev/null
 	IMGNAME="`docker image ls --all | grep siglasticsearch | awk '{print $3}'`"; echo ${IMGNAME}; docker image rm ${IMGNAME} 2>/dev/null
-	#unpack and import the image
-        tar -zxvf siglasticsearch_image.tar.gz
-        docker load -i siglasticsearch_image.docker
+	#import the image
+        docker load -i ${IMAGE_FILENAME}${COMPRESS_EXT}
         #if the load was a failure, bail out
         if ! [ "$?" -eq 0 ]; then
                 echo "Build did not succeed.  Cannot proceed."
@@ -96,10 +106,9 @@ if [ "${REBUILD}" ]; then
         fi
 
 #otherwise, load the pre-made image
-elif [ -e "siglasticsearch_image.tar.gz" ]; then
-	#unpack and import the image
-	tar -zxvf siglasticsearch_image.tar.gz
-	docker load -i siglasticsearch_image.docker
+elif [ -r "${IMAGE_FILENAME}${COMPRESS_EXT}" ]; then
+	#import the image
+	docker load -i ${IMAGE_FILENAME}${COMPRESS_EXT}
 
 	#if the load was a failure, bail out
 	if ! [ "$?" -eq 0 ]; then

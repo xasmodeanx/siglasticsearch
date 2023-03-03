@@ -2,5 +2,7 @@
 *.exe
 *.dbg
 *.docker
-*.tar.gz
-
+*.tar
+*.gz
+*.bz2
+*.xz
