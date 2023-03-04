@@ -1,6 +1,6 @@
 {
   "attributes": {
     "title": "signals",
-    "timeFieldName": "Time"
+    "timeFieldName": "modeUpdateTime"
   }
 }

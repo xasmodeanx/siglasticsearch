@@ -17,22 +17,22 @@
       "@timestamp": {
         "type": "date"
         },
-        "Group": {
+        "groupNumber": {
           "type": "keyword"
         },
-        "Modem": {
+        "modemNumber": {
           "type": "keyword"
         },
-        "Network": {
+        "networkName": {
           "type": "keyword"
         },
-        "Serial": {
+        "serialNumber": {
           "type": "keyword"
         },
-        "Status": {
+        "operatingMode": {
           "type": "keyword"
         },
-        "Time": {
+        "modeUpdateTime": {
           "type": "date",
           "format": "epoch_second"
         },
