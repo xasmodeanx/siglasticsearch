@@ -62,8 +62,8 @@ if [ "$CONTAINER" ]; then
 		else
 			echo "elasticsearch.password: \"$KIBANA_SYSTEM_PASSWORD\"" >> /usr/share/kibana/config/kibana.yml
 		fi
-        	#Kill kibana and let it supervisor restart it automatically to pick up the new password
-        	ps aux | grep kibana | grep -v grep | awk '{print $2}' | xargs kill -9
+		# Restart kibana to pick up the new password
+		supervisorctl restart kibana
 	else
 		#Enumerate our passwords
 		KIBANA_SYSTEM_PASSWORD="`cat /usr/share/elasticsearch/data/passwords | grep 'PASSWORD kibana_system' | awk '{print $4}'`"
@@ -200,11 +200,11 @@ if ! [ -e "/.firstrun" ]; then
 	cp -fv /usr/share/elasticsearch/config/elasticsearch.yml.autologin /usr/share/elasticsearch/config/elasticsearch.yml
         rm -f /usr/share/elasticsearch/config/elasticsearch.yml.autologin
 
-	#Kill elastic and let supervisor restart it automatically to pick up the new anonymous access directives
-	ps aux | grep java | grep -v grep | awk '{print $2}' | xargs kill -9 
+	# Restart elasticsearch to pick up the new anonymous access directives
+	supervisorctl restart elasticsearch
 	sleep 5
-	#Kill kibana and let supervisor restart it automatically to pick up the new password
-        ps aux | grep kibana | grep -v grep | awk '{print $2}' | xargs kill -9
+	# Restart kibana to pick up the new password
+	supervisorctl restart kibana
 fi
 touch /.firstrun
 
