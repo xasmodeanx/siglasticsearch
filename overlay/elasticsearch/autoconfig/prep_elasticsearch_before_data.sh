@@ -164,19 +164,21 @@ for index in $INDICES; do
 done
 sleep 1
 
-#####################################################################
-#Create a restricted user role and add a user to it                 #
-#####################################################################
-echo "Creating Kibana roles and restricted users..."
+################################################################################
+# Create a restricted user role and add a user to it						   #
+################################################################################
+echo "Creating User accounts and roles ..."
 echo
-curl -u elastic:${ELASTIC_PASSWORD} -X PUT "http://$ELASTICSERVER:5601/api/security/role/Signal_Viewer" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d@Signal_Viewer_kibana_role.json
-echo
-curl -u elastic:${ELASTIC_PASSWORD} -X PUT "http://$ELASTICSERVER:5601/api/security/role/anonymous" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d@anonymous_kibana_role.json
-echo
-curl -u elastic:${ELASTIC_PASSWORD} -X PUT "http://$ELASTICSERVER:9200/_security/user/anonkibanauser?pretty" -H 'Content-Type: application/json' -d@anonkibanauser_user.json
-echo
-curl -u elastic:${ELASTIC_PASSWORD} -X PUT "http://$ELASTICSERVER:9200/_security/user/anonymous?pretty" -H 'Content-Type: application/json' -d@anonymous_user.json
-echo
+for ROLE in accounts/*.role.json; do
+  ROLENAME=`basename ${ROLE} | cut -f1 -d.`
+  URL="http://${ELASTICSERVER}:5601/api/security/role/${ROLENAME}"
+  curl -u elastic:${ELASTIC_PASSWORD} -X PUT ${URL} -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d@${ROLENAME}
+done
+for USER in accounts/*.user.json; do
+  USERNAME=`basename ${ROLE} | cut -f1 -d.`
+  URL="http://${ELASTICSERVER}:9200/_security/user/${USERNAME}?pretty"
+  curl -u elastic:${ELASTIC_PASSWORD} -X PUT "${URL}" -H 'Content-Type: application/json' -d@${USERNAME}
+done
 
 
 
