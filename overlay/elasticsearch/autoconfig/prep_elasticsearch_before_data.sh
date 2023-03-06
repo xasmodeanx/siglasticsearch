@@ -172,12 +172,12 @@ echo
 for ROLE in accounts/*.role.json; do
   ROLENAME=`basename ${ROLE} | cut -f1 -d.`
   URL="http://${ELASTICSERVER}:5601/api/security/role/${ROLENAME}"
-  curl -u elastic:${ELASTIC_PASSWORD} -X PUT ${URL} -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d@${ROLENAME}
+  curl -u elastic:${ELASTIC_PASSWORD} -X PUT ${URL} -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d@${ROLE}
 done
 for USER in accounts/*.user.json; do
   USERNAME=`basename ${ROLE} | cut -f1 -d.`
   URL="http://${ELASTICSERVER}:9200/_security/user/${USERNAME}?pretty"
-  curl -u elastic:${ELASTIC_PASSWORD} -X PUT "${URL}" -H 'Content-Type: application/json' -d@${USERNAME}
+  curl -u elastic:${ELASTIC_PASSWORD} -X PUT "${URL}" -H 'Content-Type: application/json' -d@${USER}
 done
 
 
